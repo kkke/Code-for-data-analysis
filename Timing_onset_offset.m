@@ -1,6 +1,7 @@
 function [t_on t_off]=Timing_onset_offset(data, timestamps, threshold,spacing,fig)
 %% this scripts is for quick extract the timestamps of the onset and offset of any analog signal
 % INPUT:
+%
 %        data
 %        timestamps
 %        threshold: for analog to cross, very import; the spacing is set as
