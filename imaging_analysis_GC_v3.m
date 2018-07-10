@@ -281,34 +281,97 @@ xlabel('Time (s)')
 save('data.mat','Y_r','trial')
 %% reorganize the data
 neuron = trial2neuron5tastant(trial);
+%% stats for each tastant
 %% statistical test
 for j = 1:length(neuron)
     % j = 15;
-    idx = find(trial(1).framT>-1 & trial(1).framT <0);
-    T_idx1 = find(trial(1).T>0 & trial(1).T <1);
-    T_idx2 = find(trial(1).T>1 & trial(1).T <2);
-    T_idx3 = find(trial(1).T>2 & trial(1).T <3);
-    for i = 1:length(trial)
-        baseline(i) = mean(trial(i).traceSmooth_dF(j,idx),2);
-        Taste_1(i)    = mean(trial(i).Taste(j,T_idx1),2);
-        Taste_2(i)    = mean(trial(i).Taste(j,T_idx2),2);
-        Taste_3(i)    = mean(trial(i).Taste(j,T_idx3),2);
-    end
-    [p(1),h(1)] = ranksum(baseline,Taste_1);
-    if mean(Taste_1)< mean(baseline);
+    idx = find(neuron(j).T>-1 & neuron(j).T <0);
+    T_idx1 = find(neuron(j).T>0 & neuron(j).T <3);
+%     T_idx2 = find(neuron(j).T>1 & neuron(j).T <2);
+%     T_idx3 = find(neuron(j).T>2 & neuron(j).T <3);
+    S_baseline    = mean(neuron(j).S_Taste_dF(:,idx),2);
+    S_Taste_1     = mean(neuron(j).S_Taste_dF(:,T_idx1),2);
+%     S_Taste_2   = mean(neuron(j).S_Taste_dF(:,T_idx2),2);
+%     S_Taste_3    = mean(neuron(j).S_Taste_dF(:,T_idx3),2);
+    
+    [p(1),h(1)] = ranksum(S_baseline,S_Taste_1);
+    if mean(S_Taste_1)< mean(S_baseline);
         h(1) = 0;
     end
-    [p(2),h(2)] = ranksum(baseline,Taste_2);
-    if mean(Taste_2)< mean(baseline);
+%     [p(2),h(2)] = ranksum(S_baseline,S_Taste_2);
+%     if mean(S_Taste_2)< mean(S_baseline);
+%         h(2) = 0;
+%     end
+%     [p(3),h(3)] = ranksum(S_baseline,S_Taste_3);
+%     if mean(S_Taste_3)< mean(S_baseline);
+%         h(3) = 0;
+%     end
+    M_baseline    = mean(neuron(j).M_Taste_dF(:,idx),2); % 2nd taste
+    M_Taste_1     = mean(neuron(j).M_Taste_dF(:,T_idx1),2);
+    [p(2),h(2)] = ranksum(M_baseline,M_Taste_1);
+    if mean(M_Taste_1)< mean(M_baseline);
         h(2) = 0;
     end
-    [p(3),h(3)] = ranksum(baseline,Taste_3);
-    if mean(Taste_3)< mean(baseline);
+    
+    CA_baseline    = mean(neuron(j).CA_Taste_dF(:,idx),2); % 3rd taste
+    CA_Taste_1     = mean(neuron(j).CA_Taste_dF(:,T_idx1),2);
+    [p(3),h(3)] = ranksum(CA_baseline,CA_Taste_1);
+    if mean(CA_Taste_1)< mean(CA_baseline);
         h(3) = 0;
     end
-    neuron(j).TasteRes.p = p;
-    neuron(j).TasteRes.h = sum(h);
-    neuron(j).TasteResponse = sum(h);
+    
+    Q_baseline    = mean(neuron(j).Q_Taste_dF(:,idx),2); % 4th taste
+    Q_Taste_1     = mean(neuron(j).Q_Taste_dF(:,T_idx1),2);
+    [p(4),h(4)] = ranksum(Q_baseline,Q_Taste_1);
+    if mean(Q_Taste_1)< mean(Q_baseline);
+        h(4) = 0;
+    end   
+    
+    W_baseline    = mean(neuron(j).W_Taste_dF(:,idx),2); % 4th taste
+    W_Taste_1     = mean(neuron(j).W_Taste_dF(:,T_idx1),2);
+    [p(5),h(5)] = ranksum(W_baseline,W_Taste_1);
+    if mean(W_Taste_1)< mean(W_baseline);
+        h(5) = 0;
+    end   
+    
+    
+    neuron(j).Sres = h(1);
+    neuron(j).Mres = h(2);
+    neuron(j).CAres = h(3);
+    neuron(j).Qres = h(4);
+    neuron(j).Wres = h(5);
 end
 %%
-save('data.mat','trial','data','neuron')
+plot_dF(116,neuron)
+
+%% statistical test here the baseline is the 1 s before the cue; all tastant are tested together
+% for j = 1:length(neuron)
+%     % j = 15;
+%     idx = find(trial(1).framT>-1 & trial(1).framT <0);
+%     T_idx1 = find(trial(1).T>0 & trial(1).T <1);
+%     T_idx2 = find(trial(1).T>1 & trial(1).T <2);
+%     T_idx3 = find(trial(1).T>2 & trial(1).T <3);
+%     for i = 1:length(trial)
+%         baseline(i) = mean(trial(i).traceSmooth_dF(j,idx),2);
+%         Taste_1(i)    = mean(trial(i).Taste(j,T_idx1),2);
+%         Taste_2(i)    = mean(trial(i).Taste(j,T_idx2),2);
+%         Taste_3(i)    = mean(trial(i).Taste(j,T_idx3),2);
+%     end
+%     [p(1),h(1)] = ranksum(baseline,Taste_1);
+%     if mean(Taste_1)< mean(baseline);
+%         h(1) = 0;
+%     end
+%     [p(2),h(2)] = ranksum(baseline,Taste_2);
+%     if mean(Taste_2)< mean(baseline);
+%         h(2) = 0;
+%     end
+%     [p(3),h(3)] = ranksum(baseline,Taste_3);
+%     if mean(Taste_3)< mean(baseline);
+%         h(3) = 0;
+%     end
+%     neuron(j).TasteRes.p = p;
+%     neuron(j).TasteRes.h = sum(h);
+%     neuron(j).TasteResponse = sum(h);
+% end
+%%
+save('data.mat','trial','Y_r','neuron')
