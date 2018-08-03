@@ -26,25 +26,25 @@ else
     Taste_1(2,:) = 0;
 end
 
-if isempty(Taste_1)
+if isempty(Taste_2)
     Taste_2 =[];
 else
     Taste_2(2,:) = 1;
 end
 
-if isempty(Taste_1)
+if isempty(Taste_3)
     Taste_3 =[];
 else
     Taste_3(2,:) = 2;
 end
 
-if isempty(Taste_1)
+if isempty(Taste_4)
     Taste_4 =[];
 else
     Taste_4(2,:) = 3;
 end
 
-if isempty(Taste_1)
+if isempty(Taste_5)
     Taste_5 =[];
 else
     Taste_5(2,:) = 4;
