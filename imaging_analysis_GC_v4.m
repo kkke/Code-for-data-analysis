@@ -2,7 +2,7 @@
 %% rigister your image
 % segment your image with Suite2p
 %% load imaging data and ROI
-load('F_RVKC283_20180405_plane1_proc')
+load('F_RVKC368_180802_plane1_proc')
 idx = [dat.stat.iscell];
 Fcell = dat.Fcell{1,1}(find(idx==1),:);  % extract the neuron;
 FcellNeu = dat.FcellNeu{1,1}(find(idx==1),:);
@@ -14,7 +14,7 @@ FcellNeu = dat.FcellNeu{1,1}(find(idx==1),:);
 % %%
 % save('data.mat','data')
 %% load the event
-[analog,trial] = process_intan_v2('RVKC368_180731.rhd');
+[analog,trial] = process_intan_v2('RVKC368_180802.rhd');
 
 %% load the licking
 % analog2 = SettingTwoPhoton('RVKC368_180731');
@@ -65,114 +65,7 @@ title(['Neuron # ', num2str(n)])
 xlim([-1.5,7])
 
 end
-%% Plot the Sucrose trial
-% for j = 1:size(trial(1).trace,1)
-    n = 30;
-    figure;
-    for i = 1: length(trial)
-        if ~isnan(trial(i).S)
-        plot(trial(i).framT, trial(i).traceSmooth_dF(n,:),'Color',[0,0,0,0.5])
-        hold on
-        end
-    end
-    title(['Neuron # ', num2str(n)])
-    xlim([-1.5,7])
-% end
-%% Plot the Maltose trial
-% for j = 1:size(trial(1).trace,1)
-    n = 45;
-    figure;
-    for i = 1: length(trial)
-        if ~isnan(trial(i).N)
-        plot(trial(i).framT, trial(i).traceSmooth_dF(n,:),'Color',[0,0,0,0.5])
-        hold on
-        end
-    end
-    title(['Neuron # ', num2str(n)])
-    xlim([-1.5,7])
-% end
-%% Plot the quinine trial
-    n = 45;
-    figure;
-    for i = 1: length(trial)
-        if ~isnan(trial(i).CA)
-        plot(trial(i).framT, trial(i).traceSmooth_dF(n,:),'Color',[0,0,0,0.5])
-        hold on
-        end
-    end
-    title(['Neuron # ', num2str(n)])
-    xlim([-1.5,7])
-    
-%% Plot the Cyclohexamide trial
-    n = 45;
-    figure;
-    for i = 1: length(trial)
-        if ~isnan(trial(i).Q)
-        plot(trial(i).framT, trial(i).traceSmooth_dF(n,:),'Color',[0,0,0,0.5])
-        hold on
-        end
-    end
-    title(['Neuron # ', num2str(n)])
-    xlim([-1.5,7])
-    
-%% Plot the water trial
-    n = 45;
-    figure;
-    for i = 1: length(trial)
-        if ~isnan(trial(i).W)
-        plot(trial(i).framT, trial(i).traceSmooth_dF(n,:),'Color',[0,0,0,0.5])
-        hold on
-        end
-    end
-    title(['Neuron # ', num2str(n)])
-    xlim([-1.5,7])
-% end
-%% Visualize the averaged response
-% for n = 1:27
-% n =12;
-n =13;
-it = 1;
-for i = 1: length(trial)
-    if ~isnan(trial(i).S)
-        S_trace_dF(it,:) = trial(i).traceSmooth_dF(n,:);
-        it =1+it;
-    end
-end
 
-% n =12;
-it = 1;
-for i = 1: length(trial)
-    if ~isnan(trial(i).N)
-        M_trace_dF(it,:) = trial(i).traceSmooth_dF(n,:);
-        it =1+it;
-    end
-end
-
-it = 1;
-for i = 1: length(trial)
-    if ~isnan(trial(i).CA)
-        Q_trace_dF(it,:) = trial(i).traceSmooth_dF(n,:);
-        it =1+it;
-    end
-end
-
-it = 1;
-for i = 1: length(trial)
-    if ~isnan(trial(i).Q)
-        Cy_trace_dF(it,:) = trial(i).traceSmooth_dF(n,:);
-        it =1+it;
-    end
-end
-
-figure;
-plot(trial(1).framT,mean(S_trace_dF,1))
-hold on
-plot(trial(1).framT,mean(M_trace_dF,1))
-plot(trial(1).framT,mean(Q_trace_dF,1))
-plot(trial(1).framT,mean(Cy_trace_dF,1))
-xlim([-1.5,7])
-legend({'S','M','Q','Cy'})
-% end
 %% align to the tastant
 for i = 1:length(trial)
     if ~isnan(trial(i).S)
@@ -207,82 +100,7 @@ T = mean(T,1);
 for i = 1:length(trial)
     trial(i).Tpro = T; % creat a proximate time for all tastant, as tastant may jitter a little bit.
 end
-%% plot the average response aligned to tastant
-n =5;
-it = 1;
-for i = 1: length(trial)
-    if ~isnan(trial(i).S)
-        S_Taste_dF(it,:) = trial(i).Taste(n,:);
-        it =1+it;
-    end
-end
 
-% n =12;
-it = 1;
-for i = 1: length(trial)
-    if ~isnan(trial(i).N)
-        M_Taste_dF(it,:) = trial(i).Taste(n,:);
-        it =1+it;
-    end
-end
-
-it = 1;
-for i = 1: length(trial)
-    if ~isnan(trial(i).W)
-        W_Taste_dF(it,:) = trial(i).Taste(n,:);
-        it =1+it;
-    end
-end
-
-
-figure;
-plot(T,mean(S_Taste_dF,1))
-hold on
-plot(T,mean(M_Taste_dF,1))
-plot(T,mean(W_Taste_dF,1))
-ylabel('dF/F')
-xlabel('Time (s)')
-xlim([-4,4])
-legend('Sucrose','Maltose','Water')
-% end
-%Plot the Sucrose trial
-% for j = 1:size(trial(1).trace,1)
-% n = 12;
-figure;
-for i = 1: size(S_Taste_dF,1)  
-    plot(T, S_Taste_dF(i,:),'Color',[0,0,0,0.2])
-    hold on
-end
-plot(T,mean(S_Taste_dF,1),'k')
-title(['Neuron # ', num2str(n), ' Sucrose'])
-xlim([-4,4])
-ylabel('dF/F')
-xlabel('Time (s)')   
-% Plot the Maltose trial    
-% n = 12;
-figure;
-for i = 1: size(M_Taste_dF,1)  
-    plot(T, M_Taste_dF(i,:),'Color',[0,0,0,0.2])
-    hold on
-end
-plot(T,mean(M_Taste_dF,1),'k')
-title(['Neuron # ', num2str(n), ' Maltose'])
-xlim([-4,4])
-ylabel('dF/F')
-xlabel('Time (s)')
-
-figure;
-for i = 1: size(W_Taste_dF,1)  
-    plot(T, W_Taste_dF(i,:),'Color',[0,0,0,0.2])
-    hold on
-end
-plot(T,mean(W_Taste_dF,1),'k')
-title(['Neuron # ', num2str(n), ' Water'])
-xlim([-4,4])
-ylabel('dF/F')
-xlabel('Time (s)')
-%%
-save('data.mat','Fcell','trial','dat')
 %% reorganize the data
 neuron = trial2neuron5tastant(trial);
 %% stats for each tastant
@@ -290,28 +108,17 @@ neuron = trial2neuron5tastant(trial);
 t = 0.05;
 rw = 3;
 for j = 1:length(neuron)
-    % j = 15;
     idx = find(neuron(j).T>-1 & neuron(j).T <0);
     T_idx1 = find(neuron(j).T>0 & neuron(j).T <rw);
-%     T_idx2 = find(neuron(j).T>1 & neuron(j).T <2);
-%     T_idx3 = find(neuron(j).T>2 & neuron(j).T <3);
-    S_baseline    = mean(neuron(j).S_Taste_dF(:,idx),2);
-    S_Taste_1     = mean(neuron(j).S_Taste_dF(:,T_idx1),2);
-%     S_Taste_2   = mean(neuron(j).S_Taste_dF(:,T_idx2),2);
-%     S_Taste_3    = mean(neuron(j).S_Taste_dF(:,T_idx3),2);
     
+   % S respose
+    S_baseline    = mean(neuron(j).S_Taste_dF(:,idx),2);
+    S_Taste_1     = mean(neuron(j).S_Taste_dF(:,T_idx1),2);   
     [p(1),h(1)] = ranksum(S_baseline,S_Taste_1);
     if mean(S_Taste_1)< mean(S_baseline) || p(1)>t || mean(S_Taste_1)<0;
         h(1) = 0;
     end
-%     [p(2),h(2)] = ranksum(S_baseline,S_Taste_2);
-%     if mean(S_Taste_2)< mean(S_baseline);
-%         h(2) = 0;
-%     end
-%     [p(3),h(3)] = ranksum(S_baseline,S_Taste_3);
-%     if mean(S_Taste_3)< mean(S_baseline);
-%         h(3) = 0;
-%     end
+
     M_baseline    = mean(neuron(j).M_Taste_dF(:,idx),2); % 2nd taste
     M_Taste_1     = mean(neuron(j).M_Taste_dF(:,T_idx1),2);
     [p(2),h(2)] = ranksum(M_baseline,M_Taste_1);
@@ -338,9 +145,7 @@ for j = 1:length(neuron)
     [p(5),h(5)] = ranksum(W_baseline,W_Taste_1);
     if mean(W_Taste_1)< mean(W_baseline)|| p(5)>t || mean(W_Taste_1)<0;
         h(5) = 0;
-    end   
-    
-    
+    end    
     resp(j).Sres = h(1);
     resp(j).Mres = h(2);
     resp(j).CAres = h(3);
@@ -348,93 +153,112 @@ for j = 1:length(neuron)
     resp(j).Wres = h(5);
 end
 %%
-plot_dF(38,neuron)
+% resp1 = tasteResponse(neuron);
+%%
+plot_dF(32,neuron)
 
 %% statistical test here the baseline is the 1 s before the cue; test cue response
 t = 0.05;
 rw = 2;
 for j = 1:length(neuron)
-    % j = 15;
     idx = find(trial(1).framT>-1 & trial(1).framT <0);
     C_idx1 = find(trial(1).framT>0 & trial(1).framT <rw);
-%     C_idx2 = find(trial(1).framT>1 & trial(1).framT <2);
     for i = 1:length(trial)
         baseline(i)   = mean(trial(i).traceSmooth_dF(j,idx),2);
         C_1(i)        = mean(trial(i).traceSmooth_dF(j,C_idx1),2);
-%         C_2(i)        = mean(trial(i).traceSmooth_dF(j,C_idx1),2);
     end
     [c_p(1),c_h(1)] = ranksum(baseline,C_1);
     if mean(C_1)< mean(baseline) || c_p(1)>t || mean(C_1)<0 ;
         c_h(1) = 0;
     end
-%     [c_p(2),c_h(2)] = ranksum(baseline,C_2);
-%     if mean(C_2)< mean(baseline) || c_p(2)>t || mean(C_2)<0 ;;
-%         c_h(2) = 0;
-%     end
     resp(j).CueRes = c_h(1);
-%     neuron(j).CueRes.h = sum(h);
-%     neuron(j).TasteResponse = sum(h);
+    clear baseline C_1
 end
 %% check the cue respone
-plot_dF_cue(28,neuron)
+plot_dF_cue(31,neuron)
 
 %%
-save('data.mat','trial','Fcell','neuron','resp')
+save('data.mat','trial','Fcell','neuron','resp','dat')
+%% trying to extract the licking activity
+% load('summary.mat') % summary.mat is saved be beha_2p
+% plotLickIntan(summarydata)
+% realign to the first lick after tone
+for i = 1:length(trial)
+    idx = find(trial(i).licks >1.9);
+    trial(i).time_lick = trial(i).framT-trial(i).licks(idx(1));
+end
+
+for i = 1:length(trial)
+    idx = find(trial(i).time_lick>-4 & trial(i).time_lick<4);  % should be 50
+    if length(idx)==50
+        trial(i).TLick = trial(i).time_lick(idx);
+        trial(i).LickTrace = trial(i).traceSmooth_dF(:,idx);
+    elseif length(idx) ==49
+        idx(end+1) = idx(end)+1;
+        trial(i).TLick = trial(i).time_lick(idx);
+        trial(i).LickTrace = trial(i).traceSmooth_dF(:,idx);
+    end 
+end
+%% statistical test here the baseline is the 1 s before the cue; test lick response
+t = 0.05;
+rw = 1;
+for j = 1:length(neuron)
+    idx = find(trial(1).framT>-1 & trial(1).framT <0);
+    C_idx1 = find(trial(1).TLick>0 & trial(1).TLick <rw);
+    for i = 1:length(trial)
+        baseline(i)   = mean(trial(i).traceSmooth_dF(j,idx),2);
+        C_1(i)        = mean(trial(i).LickTrace(j,C_idx1),2);
+    end
+    [c_p(1),c_h(1)] = ranksum(baseline,C_1);
+    if mean(C_1)< mean(baseline) || c_p(1)>t || mean(C_1)<0 ;
+        c_h(1) = 0;
+    end
+
+    resp(j).LickRes = c_h(1);
+
+end
 %%
-im = read_file('reg2.tif');
-im = mean(im,3);
-save('data.mat','trial','Fcell','neuron','resp')
+save('data.mat','trial','Fcell','neuron','resp','dat')
 %%
-resp = squeeze(cell2mat(struct2cell(resp)));
-prop_taste = length(find(sum(resp,1)>0))/size(resp,2);
+resp3 = tasteResponse3(neuron,trial);
+% resp2 = tasteResponse2(neuron);
+save('data.mat','trial','Fcell','neuron','resp','dat','resp3')
+
 %% trying to find the location of the active neuron
-% location has been loaded as cc
-im = read_file('reg2.tif');
-im = mean(im,3);
-%%
-figure;
-imshow(im,[0,8000])
+% plot the spatial map
+ind = [dat.stat.iscell];
+loc = dat.stat(find(ind ==1));
+image = dat.ops.mimg1;
+figure;imshow(image,[500,5000])
 hold on
-for i = 1:size(resp,2)
-    if true(resp(1,i))
-        plot(cc{i}(1,:),cc{i}(2,:),'Color',[1,0,0])
+BW =zeros(512,512);
+for i = 1:length(loc) 
+    for j = 1:length(loc(i).xpix)
+        BW(loc(i).ypix(j), loc(i).xpix(j))=1;
     end
+    [B{i},L{i}] = bwboundaries(BW,'noholes');
+    BW = zeros(512,512);
+ end
+xlim([1,512]);ylim([1,512])
+for k = 1:length(B)
+   boundary = B{k};
+   plot(boundary{1}(:,2), boundary{1}(:,1), 'r', 'LineWidth', 1)
+   text(mean(boundary{1}(:,2)),mean(boundary{1}(:,1)),num2str(k),'Color',[0,0,0],'FontSize',16)
 end
-title('Sucrose')
-
-figure;
-imshow(im,[0,8000])
-hold on
-for i = 1:size(resp,2)
-    if true(resp(2,i))
-        plot(cc{i}(1,:),cc{i}(2,:),'Color',[0,1,0])
-    end
+%% find the proportion of responsive neuron
+cue_resp = [resp3.CueRes];
+idx_cue  = find(cue_resp==1);
+lick_resp = [resp3.LickRes];
+idx_lick = find(lick_resp==1);
+idx_lick = setdiff(idx_lick,idx_cue);
+%% export as pdf
+addpath('E:\MATLAB\Imaging Analysis\ExportPdf')
+for i = 1:length(idx_cue)
+    plot_dF_cue(idx_cue(i),neuron)
+    export_fig(sprintf('cueRes%d', i), '-pdf');
+    list{i} = ['cueRes',num2str(i),'.pdf']
 end
-title('Maltose')
-
+append_pdfs('summary.pdf',list{:})
 %%
-figure
-for i = 1: size(resp,2)
-    if true(resp(1,i)) & true(resp(2,i))
-        s_ap = max(mean(neuron(i).S_Taste_dF,1));
-        m_ap = max(mean(neuron(i).M_Taste_dF,1))
-        scatter(s_ap,m_ap,'r')
-        hold on
-    end
-end
-xlim([0 4])
-ylim([0 4])
-plot([0 2.5],[0, 2.5],'k--')
-box on
-xlabel('Sucrose response')
-ylabel('Maltose response')
-%%
-figure
-imshow(im,[0,8000])
-hold on
-for i = 1:size(resp,2)
-  
-        plot(cc{i}(1,:),cc{i}(2,:),'Color',[1,1,0])
 
-end
-title('ROI')
+% prop_taste = length(find(sum(resp,1)>0))/size(resp,2);
