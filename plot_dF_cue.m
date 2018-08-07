@@ -9,7 +9,7 @@ plot(neuron(i).framT,mean(neuron(i).trace_dF,1),'r')
 xlim([-1,5])
 xlabel('Time (s)')
 ylabel('dF/F')
-title('Tone response')
+title(['Tone response Neuron #',num2str(i)])
 
 % figure
 % for j = 1:size(neuron(i).M_Taste_dF,1)
