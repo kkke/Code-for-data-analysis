@@ -231,6 +231,70 @@ lickrate_w = cell2mat(lickrate.w);
 
 lickrate_avg = 1/mean([lickrate_s,lickrate_n,lickrate_c,lickrate_q]);
 %%
+t =1;
+figure
+for j = 1:length(summarydata.S_ps)
+    if ~isempty(lick_S.spikeraster(j).times)
+        id = find(lick_S.spikeraster(j).times>0);
+        t1 = id(1);
+        h1 = scatter(lick_S.spikeraster(j).times-lick_S.spikeraster(j).times(t1),j*ones(size(lick_S.spikeraster(j).times)),6,'cv','filled');
+        idx = find(lick_S.spikeraster(j).times>0 & lick_S.spikeraster(j).times<=t);       
+        lickrate.s{j} = diff(lick_S.spikeraster(j).times(idx));
+        hold on
+    end
+end
+i = j;
+lick_N = spike2eventRasteandPSTH_NP (summarydata.licks,summarydata.N_ps, 100, -3000, 5000);
+for j = 1:length(summarydata.N_ps)
+    i = i+1;
+    if ~isempty(lick_N.spikeraster(j).times)
+        id = find(lick_N.spikeraster(j).times>0);
+        t1 = id(1);
+        h1 = scatter(lick_N.spikeraster(j).times-lick_N.spikeraster(j).times(t1),i*ones(size(lick_N.spikeraster(j).times)),6,'mv','filled');
+        idx = find(lick_N.spikeraster(j).times>0 & lick_N.spikeraster(j).times<=t);
+        lickrate.n{j} = diff(lick_N.spikeraster(j).times(idx));
+        hold on
+    end
+end
+
+lick_C = spike2eventRasteandPSTH_NP (summarydata.licks,summarydata.CA_ps, 100, -3000, 5000);
+for j = 1:length(summarydata.CA_ps)
+    i = i+1;
+    if ~isempty(lick_C.spikeraster(j).times)
+        id = find(lick_C.spikeraster(j).times>0);
+        t1 = id(1);
+        h1 = scatter(lick_C.spikeraster(j).times-lick_C.spikeraster(j).times(t1),i*ones(size(lick_C.spikeraster(j).times)),6,'bv','filled');
+        idx = find(lick_C.spikeraster(j).times>0 & lick_C.spikeraster(j).times<=t);
+        lickrate.c{j} = diff(lick_C.spikeraster(j).times(idx));
+        hold on
+    end
+end
+
+lick_Q = spike2eventRasteandPSTH_NP (summarydata.licks,summarydata.Q_ps, 100, -3000, 5000);
+for j = 1:length(summarydata.Q_ps)
+    i = i+1;
+    if ~isempty(lick_Q.spikeraster(j).times)
+        id = find(lick_Q.spikeraster(j).times>0);
+        t1 = id(1);
+        h1 = scatter(lick_Q.spikeraster(j).times-lick_Q.spikeraster(j).times(t1),i*ones(size(lick_Q.spikeraster(j).times)),6,'rv','filled');
+        idx = find(lick_Q.spikeraster(j).times>0 & lick_Q.spikeraster(j).times<=t);
+        lickrate.q{j} = diff(lick_Q.spikeraster(j).times(idx));
+        hold on
+    end
+end
+
+lick_W = spike2eventRasteandPSTH_NP (summarydata.licks,summarydata.W_ps, 100, -3000, 5000);
+for j = 1:length(summarydata.W_ps)
+    i = i+1;
+    if ~isempty(lick_W.spikeraster(j).times)
+        id = find(lick_W.spikeraster(j).times>0);
+        t1 = id(1);
+        h1 = scatter(lick_W.spikeraster(j).times-lick_W.spikeraster(j).times(t1),i*ones(size(lick_W.spikeraster(j).times)),6,'kv','filled');
+        idx = find(lick_W.spikeraster(j).times>0 & lick_W.spikeraster(j).times<=t);
+        lickrate.w{j} = diff(lick_W.spikeraster(j).times(idx));
+        hold on
+    end
+end
 % figure;
 % [h1,x1] = ecdf(lickrate_s);
 % hold on
