@@ -13,5 +13,6 @@ Third, run the suite2P package to perform autmatically segmentation: segmentatio
 
 Forth, run new_main.m to manually correct the segmentation.
 
+Fifth, run imaging_analysis_GC_v4.m to analyze data for GC project.
 
 
