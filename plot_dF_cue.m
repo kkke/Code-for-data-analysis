@@ -1,4 +1,4 @@
-function plot_dF(i,neuron)
+function plot_dF_cue(i,neuron)
 % i = 25;
 figure
 for j = 1:size(neuron(i).trace_dF,1)
