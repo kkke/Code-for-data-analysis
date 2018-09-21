@@ -2,7 +2,8 @@
 %% rigister your image
 % segment your image with Suite2p
 %% load imaging data and ROI
-load('F_RVKC368_180802_plane1_proc')
+clear
+load('F_RVKC378_180904_plane1_proc')
 idx = [dat.stat.iscell];
 Fcell = dat.Fcell{1,1}(find(idx==1),:);  % extract the neuron;
 FcellNeu = dat.FcellNeu{1,1}(find(idx==1),:);
@@ -14,7 +15,7 @@ FcellNeu = dat.FcellNeu{1,1}(find(idx==1),:);
 % %%
 % save('data.mat','data')
 %% load the event
-[analog,trial] = process_intan_v2('RVKC368_180802.rhd');
+[analog,trial] = process_intan_v2('RVKC378_180904.rhd');
 
 %% load the licking
 % analog2 = SettingTwoPhoton('RVKC368_180731');
@@ -35,7 +36,7 @@ dF = reshape(full(Fcell), size(Fcell,1),60,[]);
 for i = 1:length(trial)
     trial(i).trace = dF(:,:,i);
 end
-save('data.mat','Fcell','trial','dat')
+save('data.mat','Fcell','trial','dat','FcellNeu')
 %% get the timestamps of each frame after 5 time averaging
 for i = 1:length(trial)
     idx = 3:5:300;
@@ -85,8 +86,11 @@ for i = 1:length(trial)
     if length(idx)==50
         trial(i).T = trial(i).Time_Taste(idx);
         trial(i).Taste = trial(i).traceSmooth_dF(:,idx);
-    elseif length(idx) ==49
+    elseif length(idx) ==49 && idx(end)+1 <=60
         idx(end+1) = idx(end)+1;
+        trial(i).T = trial(i).Time_Taste(idx);
+        trial(i).Taste = trial(i).traceSmooth_dF(:,idx);
+    else
         trial(i).T = trial(i).Time_Taste(idx);
         trial(i).Taste = trial(i).traceSmooth_dF(:,idx);
     end 
@@ -94,7 +98,15 @@ end
 %%
 figure;
 for i = 1:length(trial)
-    T(i,:) = trial(i).T;
+    if length(trial(i).T) ==50
+        T(i,:) = trial(i).T;
+    else
+        a = length(trial(i).T);
+        for j = 1: (50-a)
+            trial(i).T(a+j) = trial(i).T(a) + j * 0.161; % in case that there are less than  50 bin, I add more bins and pad the trace with 0;
+            trial(i).Taste(:,a+j) = zeros(size(trial(1).Taste,1),1);
+        end
+    end
 end
 T = mean(T,1);
 for i = 1:length(trial)
@@ -115,35 +127,35 @@ for j = 1:length(neuron)
     S_baseline    = mean(neuron(j).S_Taste_dF(:,idx),2);
     S_Taste_1     = mean(neuron(j).S_Taste_dF(:,T_idx1),2);   
     [p(1),h(1)] = ranksum(S_baseline,S_Taste_1);
-    if mean(S_Taste_1)< mean(S_baseline) || p(1)>t || mean(S_Taste_1)<0;
+    if mean(S_Taste_1)< mean(S_baseline) || p(1)>t || mean(S_Taste_1)<0
         h(1) = 0;
     end
 
     M_baseline    = mean(neuron(j).M_Taste_dF(:,idx),2); % 2nd taste
     M_Taste_1     = mean(neuron(j).M_Taste_dF(:,T_idx1),2);
     [p(2),h(2)] = ranksum(M_baseline,M_Taste_1);
-    if mean(M_Taste_1)< mean(M_baseline)|| p(2)>t || mean(M_Taste_1)<0 ;
+    if mean(M_Taste_1)< mean(M_baseline)|| p(2)>t || mean(M_Taste_1)<0 
         h(2) = 0;
     end
     
     CA_baseline    = mean(neuron(j).CA_Taste_dF(:,idx),2); % 3rd taste
     CA_Taste_1     = mean(neuron(j).CA_Taste_dF(:,T_idx1),2);
     [p(3),h(3)] = ranksum(CA_baseline,CA_Taste_1);
-    if mean(CA_Taste_1)< mean(CA_baseline)|| p(3)>t;
+    if mean(CA_Taste_1)< mean(CA_baseline)|| p(3)>t
         h(3) = 0;
     end
     
     Q_baseline    = mean(neuron(j).Q_Taste_dF(:,idx),2); % 4th taste
     Q_Taste_1     = mean(neuron(j).Q_Taste_dF(:,T_idx1),2);
     [p(4),h(4)] = ranksum(Q_baseline,Q_Taste_1);
-    if mean(Q_Taste_1)< mean(Q_baseline)|| p(4)>t;
+    if mean(Q_Taste_1)< mean(Q_baseline)|| p(4)>t
         h(4) = 0;
     end   
     
     W_baseline    = mean(neuron(j).W_Taste_dF(:,idx),2); % 4th taste
     W_Taste_1     = mean(neuron(j).W_Taste_dF(:,T_idx1),2);
     [p(5),h(5)] = ranksum(W_baseline,W_Taste_1);
-    if mean(W_Taste_1)< mean(W_baseline)|| p(5)>t || mean(W_Taste_1)<0;
+    if mean(W_Taste_1)< mean(W_baseline)|| p(5)>t || mean(W_Taste_1)<0
         h(5) = 0;
     end    
     resp(j).Sres = h(1);
@@ -155,10 +167,10 @@ end
 %%
 % resp1 = tasteResponse(neuron);
 %%
-plot_dF(32,neuron)
+plot_dF(8,neuron)
 
 %% statistical test here the baseline is the 1 s before the cue; test cue response
-t = 0.05;
+t = 0.01;
 rw = 2;
 for j = 1:length(neuron)
     idx = find(trial(1).framT>-1 & trial(1).framT <0);
@@ -175,10 +187,10 @@ for j = 1:length(neuron)
     clear baseline C_1
 end
 %% check the cue respone
-plot_dF_cue(31,neuron)
+plot_dF_cue(15,neuron)
 
 %%
-save('data.mat','trial','Fcell','neuron','resp','dat')
+save('data.mat','trial','Fcell','neuron','resp','dat','FcellNeu')
 %% trying to extract the licking activity
 % load('summary.mat') % summary.mat is saved be beha_2p
 % plotLickIntan(summarydata)
@@ -199,6 +211,21 @@ for i = 1:length(trial)
         trial(i).LickTrace = trial(i).traceSmooth_dF(:,idx);
     end 
 end
+%%
+for i = 1:length(trial)
+    if length(trial(i).TLick)==50
+        TLick(i,:) = trial(i).TLick;
+    else
+        error('Something is wrong')
+    end
+end
+
+for i = 1:length(neuron)
+    neuron(i).TLick = mean(TLick,1);
+    for j = 1:length(trial)
+    neuron(i).Licktrace_dF(j,:) = trial(j).LickTrace(i,:);
+    end    
+end
 %% statistical test here the baseline is the 1 s before the cue; test lick response
 t = 0.05;
 rw = 1;
@@ -218,10 +245,12 @@ for j = 1:length(neuron)
 
 end
 %%
+
+%%
 save('data.mat','trial','Fcell','neuron','resp','dat')
 %%
 resp3 = tasteResponse3(neuron,trial);
-% resp2 = tasteResponse2(neuron);
+resp2 = tasteResponse2(neuron,trial);
 save('data.mat','trial','Fcell','neuron','resp','dat','resp3')
 
 %% trying to find the location of the active neuron
@@ -229,7 +258,7 @@ save('data.mat','trial','Fcell','neuron','resp','dat','resp3')
 ind = [dat.stat.iscell];
 loc = dat.stat(find(ind ==1));
 image = dat.ops.mimg1;
-figure;imshow(image,[500,5000])
+figure;imshow(image,[100,3000])
 hold on
 BW =zeros(512,512);
 for i = 1:length(loc) 
@@ -259,6 +288,11 @@ for i = 1:length(idx_cue)
     list{i} = ['cueRes',num2str(i),'.pdf']
 end
 append_pdfs('summary.pdf',list{:})
+%% summarize the data across animals: Session1
+summaryImaging_v1
+
+
+
 %%
 
 % prop_taste = length(find(sum(resp,1)>0))/size(resp,2);
