@@ -1,4 +1,4 @@
-function [cen_duration cen_boutC] = lickbout(cen_L)
+function [lickboutR cen_duration cen_boutC] = lickbout(cen_L)
 ili=diff(cen_L);
 b=find(ili>0.5);     % inter lick interval is bigger than 500 ms, which means a new licking bouts
 for i=1:length(b)
@@ -20,9 +20,9 @@ for i=1:length(bouts)
 end
 bouts=bouts(~cellfun('isempty',bouts)); % all the real bouts 
 for i = 1:length(bouts)
-    lickbout{i} = cen_L(bouts{i});
-    cen_duration(i) = lickbout{i}(end) - lickbout{i}(1);
-    cen_boutC(i)       = length(lickbout{i});
+    lickboutR{i} = cen_L(bouts{i});
+    cen_duration(i) = lickboutR{i}(end) - lickboutR{i}(1);
+    cen_boutC(i)       = length(lickboutR{i});
 end
 figure;
 histogram(cen_duration,20)
