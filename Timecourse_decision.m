@@ -1,21 +1,34 @@
 %I am trying to write a script that can generate the roc along the time.
 %% Step1: I am trying to extract the id for Right/Left planning neuron
-clearvars -except Sum % load Sum2.mat (there is one neuron in Sum.mat which does not fire during delay, but captured)
-for i = 1:length(Sum)
-    Idx(i) = Sum(i).auROC.Rcorr_vsLcorr.stats.respFlag;
-    Idx_dir(i) = Sum(i).auROC.Rcorr_vsLcorr.p;
-end
-Idx_rp = find(Idx==1 & Idx_dir>0); % id for right planning neuron
-Idx_lp = find(Idx==1 & Idx_dir<0); % id for left planning neuron
+% clearvars -except Sum % load Sum2.mat (there is one neuron in Sum.mat which does not fire during delay, but captured)
+% for i = 1:length(Sum)
+%     Idx(i) = Sum(i).auROC.Rcorr_vsLcorr.stats.respFlag;
+%     Idx_dir(i) = Sum(i).auROC.Rcorr_vsLcorr.p;
+% end
 
+function Timecourse_decision(Sum,Idx,Idx_dir)
+%         Input:
+%               Sum: the data saved in Sum2.mat
+%               Idx: the Index of selective neuron
+%               Idx: the direction of the selectivity
+% For example: 
+% load('Sum2.mat')
+% for i = 1:length(Sum)
+%     Idx(i) = Sum(i).auROC.Rcorr_vsLcorr.stats.respFlag;
+%     Idx_dir(i) = Sum(i).auROC.Rcorr_vsLcorr.p;
+% end
+Idx_rp = find(Idx==1 & Idx_dir>0); % id for right  neuron
+Idx_lp = find(Idx==1 & Idx_dir<0); % id for left  neuron
 %% Step2: Calculate the right direction preference across time ((auROC-0.5)*2)
 type = {'RightRew','LeftRew'};
 clear PSTH_auROC_R PSTH_auROC_L
+pre = -5000;
+post = 2000;
 for i = 1:length(Idx_rp)
     for j = 1:length(type)
         spike = Sum(Idx_rp(i)).PSTH.(type{j}).Corr.Spike;
         event = Sum(Idx_rp(i)).PSTH.(type{j}).Corr.Event;
-        data.(type{j}).psth  = spike2eventRasteandPSTH_NP(spike,event,100,-5000,2000);
+        data.(type{j}).psth  = spike2eventRasteandPSTH_NP(spike,event,100,pre,post);
     end
     PSTH_auROC_R(i,:) = psth_auROC_ke(data.(type{2}).psth.scmatrix, data.(type{1}).psth.scmatrix);
 end
@@ -31,7 +44,7 @@ for i = 1:length(Idx_lp)
     for j = 1:length(type)
         spike = Sum(Idx_lp(i)).PSTH.(type{j}).Corr.Spike;
         event = Sum(Idx_lp(i)).PSTH.(type{j}).Corr.Event;
-        data.(type{j}).psth  = spike2eventRasteandPSTH_NP(spike,event,100,-5000,2000);
+        data.(type{j}).psth  = spike2eventRasteandPSTH_NP(spike,event,100,pre,post);
     end
     PSTH_auROC_L(i,:) = psth_auROC_ke(data.(type{2}).psth.scmatrix, data.(type{1}).psth.scmatrix);
 end
@@ -50,7 +63,7 @@ for i = 1:length(Idx_n)
     for j = 1:length(type)
         spike = Sum(Idx_n(i)).PSTH.(type{j}).Corr.Spike;
         event = Sum(Idx_n(i)).PSTH.(type{j}).Corr.Event;
-        data.(type{j}).psth  = spike2eventRasteandPSTH_NP(spike,event,100,-3000,2000);
+        data.(type{j}).psth  = spike2eventRasteandPSTH_NP(spike,event,100,pre,post);
     end
     PSTH_auROC_N(i,:) = psth_auROC_ke(data.(type{2}).psth.scmatrix, data.(type{1}).psth.scmatrix);
 end
