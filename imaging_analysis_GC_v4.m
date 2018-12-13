@@ -3,7 +3,7 @@
 % segment your image with Suite2p
 %% load imaging data and ROI
 clear
-load('F_RVKC378_180904_plane1_proc')
+load('F_RVKC402_181024_plane1_proc')
 idx = [dat.stat.iscell];
 Fcell = dat.Fcell{1,1}(find(idx==1),:);  % extract the neuron;
 FcellNeu = dat.FcellNeu{1,1}(find(idx==1),:);
@@ -15,7 +15,7 @@ FcellNeu = dat.FcellNeu{1,1}(find(idx==1),:);
 % %%
 % save('data.mat','data')
 %% load the event
-[analog,trial] = process_intan_v2('RVKC378_180904.rhd');
+[analog,trial] = process_intan_v2('RVKC402_181024.rhd');
 
 %% load the licking
 % analog2 = SettingTwoPhoton('RVKC368_180731');
@@ -31,8 +31,12 @@ FcellNeu = dat.FcellNeu{1,1}(find(idx==1),:);
 %     hold on
 %     scatter(info(i).lick, 0.2*ones(size(info(i).lick)));
 % end
+%% correct the neuropil signal
+Fcell_c = Fcell-0.7*FcellNeu;
 %% generate a trial structure; I know each trial contains 60 frames; and licking data are aligned to the tone;
-dF = reshape(full(Fcell), size(Fcell,1),60,[]);
+% dF = reshape(full(Fcell), size(Fcell,1),60,[]);
+dF = reshape(full(Fcell_c), size(Fcell_c,1),60,[]);
+
 for i = 1:length(trial)
     trial(i).trace = dF(:,:,i);
 end
@@ -167,7 +171,7 @@ end
 %%
 % resp1 = tasteResponse(neuron);
 %%
-plot_dF(8,neuron)
+plot_dF(109,neuron)
 
 %% statistical test here the baseline is the 1 s before the cue; test cue response
 t = 0.01;
@@ -187,7 +191,7 @@ for j = 1:length(neuron)
     clear baseline C_1
 end
 %% check the cue respone
-plot_dF_cue(15,neuron)
+plot_dF_cue(13,neuron)
 
 %%
 save('data.mat','trial','Fcell','neuron','resp','dat','FcellNeu')
@@ -253,12 +257,54 @@ resp3 = tasteResponse3(neuron,trial);
 resp2 = tasteResponse2(neuron,trial);
 save('data.mat','trial','Fcell','neuron','resp','dat','resp3')
 
+
+%% find the proportion of responsive neuron
+cue_resp = [resp3.CueRes];
+idx_cue  = find(cue_resp==1);
+lick_resp = [resp3.LickRes];
+idx_lick = find(lick_resp==1);
+idx_lick = setdiff(idx_lick,idx_cue);
+
+%% summarize the data across animals: Session1
+summaryImaging_v1
+
+%%
+load('Session1.mat')
+%% export as pdf
+addpath('E:\MATLAB\Imaging Analysis\ExportPdf')
+resp = tasteResponse4(Session3);
+idx = find([resp.CueRes]==1);
+idx = find([resp.CueRes]==0 & [resp.LickRes] ==1);
+Taste = cell2mat(squeeze(struct2cell(resp))');
+TasteRes = find(sum(Taste(:,1:5),2)>=1);
+pL = find([resp.LickRes] ==1);
+TasteRes = setdiff(TasteRes,pL);
+for i = 1:length(idx)
+    plot_dF_lick(idx(i),Session3)
+    export_fig(sprintf('CueRes%d', i), '-pdf');
+    list{i} = ['CueRes',num2str(i),'.pdf']
+end
+append_pdfs('summary.pdf',list{:})
+
+for i = 1:length(TasteRes)
+    plot_dF(TasteRes(i),Session3)
+    export_fig(sprintf('TasteRes%d', i), '-pdf');
+    list{i} = ['TasteRes',num2str(i),'.pdf']
+end
+append_pdfs('summary.pdf',list{:})
+%% Tuning
+Taste = Taste(TasteRes,1:5);
+for i = 1:5
+    tuning(1,i) = i;
+    tuning(2,i) = length(find(sum(Taste,2)==i))/size(Taste,1);
+end
+%%
 %% trying to find the location of the active neuron
 % plot the spatial map
 ind = [dat.stat.iscell];
 loc = dat.stat(find(ind ==1));
 image = dat.ops.mimg1;
-figure;imshow(image,[100,3000])
+figure;imshow(image,[100,10000])
 hold on
 BW =zeros(512,512);
 for i = 1:length(loc) 
@@ -274,25 +320,3 @@ for k = 1:length(B)
    plot(boundary{1}(:,2), boundary{1}(:,1), 'r', 'LineWidth', 1)
    text(mean(boundary{1}(:,2)),mean(boundary{1}(:,1)),num2str(k),'Color',[0,0,0],'FontSize',16)
 end
-%% find the proportion of responsive neuron
-cue_resp = [resp3.CueRes];
-idx_cue  = find(cue_resp==1);
-lick_resp = [resp3.LickRes];
-idx_lick = find(lick_resp==1);
-idx_lick = setdiff(idx_lick,idx_cue);
-%% export as pdf
-addpath('E:\MATLAB\Imaging Analysis\ExportPdf')
-for i = 1:length(idx_cue)
-    plot_dF_cue(idx_cue(i),neuron)
-    export_fig(sprintf('cueRes%d', i), '-pdf');
-    list{i} = ['cueRes',num2str(i),'.pdf']
-end
-append_pdfs('summary.pdf',list{:})
-%% summarize the data across animals: Session1
-summaryImaging_v1
-
-
-
-%%
-
-% prop_taste = length(find(sum(resp,1)>0))/size(resp,2);
