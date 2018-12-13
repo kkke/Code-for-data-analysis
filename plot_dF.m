@@ -66,6 +66,6 @@ legend('S','N','CA','Q','W')
 xlim([-2,4])
 xlabel('Time (s)')
 ylabel('dF/F')
-title('Taste response')
+title(['Taste response','#',num2str(i)])
 
 
