@@ -1,10 +1,10 @@
-function [stats,stats2] = TasteTestDev(all)
+function [stats,stats2] = TasteTestDev(all,thr)
 data = all;
 tasteResponse = {'S_Taste_dF','M_Taste_dF','CA_Taste_dF','Q_Taste_dF','W_Taste_dF'};
 trace = {'S_trace_dF','M_trace_dF','CA_trace_dF','Q_trace_dF','W_trace_dF'};
 
 taste         = {'S', 'M', 'CA','Q','W'};
-thr = 3;
+% thr = 3;
 for j = 1:length(taste)
     for i = 1:length(data)
         ind = find(data(i).framT>-2 & data(i).framT<-1);  % choose [-2,-1]  as baseline; [-1,0] was used to calculate dF
